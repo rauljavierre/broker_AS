@@ -8,9 +8,7 @@ public interface Server extends Remote {
 
     void delete_service(String service) throws RemoteException;
 
-    Object execute_sync_service(String service_name, List<Object> parameters) throws RemoteException;
-
-    Object execute_async_service(String service_name, List<Object> parameters) throws RemoteException;
+    Object execute_service(String service_name, List<Object> parameters) throws RemoteException;
 
     String getListOfServices() throws RemoteException;
 

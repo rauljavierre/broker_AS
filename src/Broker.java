@@ -1,5 +1,9 @@
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.ServerNotActiveException;
 import java.util.List;
 
 /**
@@ -46,8 +50,20 @@ public interface Broker extends Remote {
      * @return the collatz sequence of the integer passed
      * @throws RemoteException may occur during the execution of a remote method call
      */
-    Object execute_async_service(final String server_name, final String service_name,
+    void execute_async_service(final String server_name, final String service_name,
                                  final List<Object> parameters) throws RemoteException;
 
+    /**
+     * <p>Calculates the collatz sequence of the integer passed</p>
+     * @return the collatz sequence of the integer passed
+     * @throws RemoteException may occur during the execution of a remote method call
+     */
+    Object obtain_async_response(final String server_name, final String service_name) throws RemoteException;
+
+    /**
+     * <p>Calculates the collatz sequence of the integer passed</p>
+     * @return the collatz sequence of the integer passed
+     * @throws RemoteException may occur during the execution of a remote method call
+     */
     String getListOfServices() throws RemoteException;
 }

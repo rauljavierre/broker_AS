@@ -1,0 +1,5 @@
+#!/bin/bash
+
+clear
+javac *.java
+java ServerBlaBloImpl

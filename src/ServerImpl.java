@@ -42,16 +42,12 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         services.remove(service);
     }
 
-    public Object execute_sync_service(String service_name, List<Object> parameters) throws RemoteException {
-        return null;
-    }
-
-    public Object execute_async_service(String service_name, List<Object> parameters) throws RemoteException {
+    public Object execute_service(String service_name, List<Object> parameters) throws RemoteException {
         return null;
     }
 
     public String getListOfServices() throws RemoteException {
-        StringBuilder toPrint = new StringBuilder("\n\nLIST OF SERVICES SUPPORTED BY THE OBJECT BROKER:\n################################################");
+        StringBuilder toPrint = new StringBuilder();
         Iterator entries = services.entrySet().iterator();
         while (entries.hasNext()) {
             Map.Entry thisEntry = (Map.Entry) entries.next();

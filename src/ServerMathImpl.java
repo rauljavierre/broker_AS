@@ -2,6 +2,8 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.*;
 
+import static java.lang.Thread.sleep;
+
 /**
  * ServerMathImpl is the class that implements the API
  * of a server that holds mathematical operations. Stateless server.
@@ -26,7 +28,6 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
      */
     public long number_of_odd(List<Integer> numbers) {
         return numbers.stream()
-                .mapToInt(Integer::valueOf)
                 .filter(ServerMathImpl::isOdd)
                 .count();
     }
@@ -104,26 +105,31 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
     }
 
     @Override
-    public Object execute_sync_service(String service_name, List<Object> parameters) {
+    public Object execute_service(String service_name, List<Object> parameters) {
         switch (service_name) {
             case "fibonacci":
-                return fibonacci(Integer.parseInt((String) parameters.get(0)));
+                try {
+                    return fibonacci(Integer.parseInt((String) parameters.get(0)));
+                }
+                catch (NumberFormatException | ClassCastException ex) {
+                    return "Bad call";
+                }
             case "number_of_odd":
-                return number_of_odd((List<Integer>) (Object) parameters);
+                try {
+                    return number_of_odd((List<Integer>) (Object) Arrays  .asList(parameters.stream().map(x -> Integer.parseInt((String) x)).toArray()));
+                }
+                catch (NumberFormatException | ClassCastException ex) {
+                    return "Bad call";
+                }
             case "collatz_sequence":
-                return collatz_sequence(Integer.parseInt((String) parameters.get(0)));
+                try {
+                    return collatz_sequence(Integer.parseInt((String) parameters.get(0)));
+                }
+                catch (NumberFormatException | ClassCastException ex) {
+                    return "Bad call";
+                }
             default:
                 return -1;
-        }
-    }
-
-    @Override
-    public Object execute_async_service(String service_name, List<Object> parameters) {
-        if(service_name.equals("fibonacci")) {
-            return fibonacci(Integer.parseInt((String) parameters.get(0)));
-        }
-        else {
-            return 0;
         }
     }
 
@@ -160,23 +166,7 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
             broker.register_service(obj.getName(), "number_of_odd", Collections.singletonList("List<Integer>"), "long");
             broker.register_service(obj.getName(), "fibonacci", Collections.singletonList("int"), "int");
             broker.register_service(obj.getName(), "collatz_sequence", Collections.singletonList("int"), "List<Integer>");
-
-            // Printing list of services available (just for debugging)
-            System.out.println(broker.getListOfServices());
-
-            // Testing our own services
-            Long odd_numbers = (Long) broker.execute_sync_service("ServerMath", "number_of_odd", Arrays.asList(new Object[]{1, 4, 1, 5}));
-            System.out.println("Result of odd_numbers: " + odd_numbers);
-
-            int fib_of_3 = (int) broker.execute_sync_service("ServerMath", "fibonacci", Collections.singletonList("3"));
-            System.out.println("Result of fibonacci(3): " + fib_of_3);
-
-            List<Integer> collatz_sequence = (List<Integer>) broker.execute_sync_service("ServerMath", "collatz_sequence", Collections.singletonList("13"));
-            System.out.println("Result of collatz_sequence(13): " + printOneList(collatz_sequence));
-
-            // Deleting one service
-            broker.delete_service(obj.getName(), "fibonacci");
-            System.out.println(broker.getListOfServices());
+            broker.delete_service(obj.getName(), "collatz_sequence");
         }
         catch (Exception ex) {
             ex.printStackTrace();
