@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * ServerMath is the interface we'll be using to declare the API
  * of a server that holds mathematical operations. Stateful server.

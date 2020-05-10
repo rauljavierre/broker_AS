@@ -13,6 +13,8 @@ import static java.lang.Thread.sleep;
  */
 public class ServerMathImpl extends ServerImpl implements ServerMath {
 
+    private static final long serialVersionUID = 4L;            //Default serial version uid
+
 
     /**
      * Class constructor.
@@ -116,7 +118,12 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
                 }
             case "number_of_odd":
                 try {
-                    return number_of_odd((List<Integer>) (Object) Arrays  .asList(parameters.stream().map(x -> Integer.parseInt((String) x)).toArray()));
+                    List<Integer> list = new ArrayList<>();
+                    for (Object x : parameters) {
+                        Integer parseInt = Integer.parseInt((String) x);
+                        list.add(parseInt);
+                    }
+                    return number_of_odd(list);
                 }
                 catch (NumberFormatException | ClassCastException ex) {
                     return "Bad call";
@@ -137,7 +144,7 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
      * <p>Executes a server that does mathematical operations on demand</p>
      * @param args arguments passed to main program (not used)
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
         // Setting the directory of java.policy
         System.setProperty("java.security.policy", "java.policy");
 
@@ -165,19 +172,13 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
             // Registering some services in the broker
             broker.register_service(obj.getName(), "number_of_odd", Collections.singletonList("List<Integer>"), "long");
             broker.register_service(obj.getName(), "fibonacci", Collections.singletonList("int"), "int");
+
+            // Waiting 60 seconds and updating our offer of services
+            sleep(60000);
             broker.register_service(obj.getName(), "collatz_sequence", Collections.singletonList("int"), "List<Integer>");
-            broker.delete_service(obj.getName(), "collatz_sequence");
-        }
-        catch (Exception ex) {
+            broker.delete_service(obj.getName(), "fibonacci");
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    private static String printOneList(List<Integer> list) {
-        StringBuilder result = new StringBuilder();
-        for (Integer element : list) {
-            result.append(element).append(" ");
-        }
-        return result.toString();
     }
 }

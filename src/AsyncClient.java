@@ -6,27 +6,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
 import static java.lang.Thread.sleep;
 
 public class AsyncClient {
 
-    private String name;
-    private String IP_port;
     private Broker broker;
 
-    public AsyncClient(String name, String IP_port, String broker_IP_port, String broker_name) {
-        this.name = name;
-        this.IP_port = IP_port;
-
+    public AsyncClient(String broker_IP_port, String broker_name) {
         // Searching the broker
         try {
             broker = (Broker) Naming.lookup("//" + broker_IP_port + "/" + broker_name);
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
     }
@@ -40,30 +30,29 @@ public class AsyncClient {
     }
 
     private List<Object> parseParameters(String parameters) {
-        return Arrays   .asList(Arrays.asList(parameters
-                .replaceAll(" ", "")
-                .split(","))
-                .stream()
-                .filter(item -> !item.equals(""))
-                .toArray());
+        return Arrays   .asList(Arrays.stream(parameters
+                        .replaceAll(" ", "")
+                        .split(","))
+                        .filter(item -> !item.equals(""))
+                        .toArray());
     }
 
-    public List<Object> entryServiceInput() throws RemoteException, InterruptedException {
+    public List<Object> entryServiceInput() {
         String serverName, serviceName, parameters;
+        List<Object> response = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the server name: ");
         serverName = scanner.nextLine();
         if(serverName.equals("")){
             return null;
         }
+        response.add(serverName);
         System.out.print("Enter the service name: ");
         serviceName = scanner.nextLine();
+        response.add(serviceName);
         System.out.print("Enter the parameters (separated by commas): ");
         parameters = scanner.nextLine();
         List<Object> parametersList = parseParameters(parameters);
-        List<Object> response = new ArrayList<>();
-        response.add(serverName);
-        response.add(serviceName);
         response.add(parametersList);
         return response;
     }
@@ -85,18 +74,20 @@ public class AsyncClient {
         System.setSecurityManager(new SecurityManager());
 
         // Creating the client
-        AsyncClient asyncClient = new AsyncClient("AsyncClient", "127.0.0.1:5004", "127.0.0.1:5000", "Broker_R_E");
+        AsyncClient asyncClient = new AsyncClient("127.0.0.1:5000", "Broker_R_E");
 
         try {
-            List<Object> list = new ArrayList<>();
+            List<Object> list;
             System.out.println(asyncClient.getListOfServices());
             while((list = asyncClient.entryServiceInput()) != null) {
-                // Ejecutar
+                if(list.get(0).equals("Broker") && list.get(1).equals("getListOfServices")) {
+                    System.out.println(asyncClient.getListOfServices());
+                    continue;
+                }
+                System.out.println("Executing " + list.get(0) + "." + list.get(1) + " and waiting 5 seconds...");
                 asyncClient.execute_async_service((String) list.get(0), (String) list.get(1), (List<Object>) list.get(2));
-                // Sleep
                 sleep(5000);
-                // Obtener respuesta
-                System.out.println(asyncClient.obtain_async_response((String) list.get(0), (String) list.get(1)));
+                System.out.println("Response: " + asyncClient.obtain_async_response((String) list.get(0), (String) list.get(1)));
             }
         } catch (RemoteException | InterruptedException e) {
             e.printStackTrace();

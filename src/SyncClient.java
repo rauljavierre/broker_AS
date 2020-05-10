@@ -6,26 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import static java.lang.Thread.sleep;
-
 public class SyncClient {
 
-    private String name;
-    private String IP_port;
     private Broker broker;
 
-    public SyncClient(String name, String IP_port, String broker_IP_port, String broker_name) {
-        this.name = name;
-        this.IP_port = IP_port;
-
+    public SyncClient(String broker_IP_port, String broker_name) {
         // Searching the broker
         try {
             broker = (Broker) Naming.lookup("//" + broker_IP_port + "/" + broker_name);
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
     }
@@ -39,15 +28,14 @@ public class SyncClient {
     }
 
     private List<Object> parseParameters(String parameters) {
-        return Arrays   .asList(Arrays.asList(parameters
+        return Arrays   .asList(Arrays.stream(parameters
                         .replaceAll(" ", "")
                         .split(","))
-                        .stream()
                         .filter(item -> !item.equals(""))
                         .toArray());
     }
 
-    public boolean entryServiceInput() throws RemoteException, InterruptedException {
+    public boolean entryServiceInput() throws RemoteException {
         String serverName, serviceName, parameters;
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the server name: ");
@@ -57,6 +45,10 @@ public class SyncClient {
         }
         System.out.print("Enter the service name: ");
         serviceName = scanner.nextLine();
+        if(serverName.equals("Broker") && serviceName.equals("getListOfServices")) {
+            System.out.println(getListOfServices());
+            return true;
+        }
         System.out.print("Enter the parameters (separated by commas): ");
         parameters = scanner.nextLine();
         List<Object> parametersList = parseParameters(parameters);
@@ -76,13 +68,13 @@ public class SyncClient {
         System.setSecurityManager(new SecurityManager());
 
         // Creating the client
-        SyncClient syncClient = new SyncClient("SyncClient", "127.0.0.1:5003", "127.0.0.1:5000", "Broker_R_E");
+        SyncClient syncClient = new SyncClient("127.0.0.1:5000", "Broker_R_E");
 
         try {
             do {
                 System.out.println(syncClient.getListOfServices());
             } while(syncClient.entryServiceInput());
-        } catch (RemoteException | InterruptedException e) {
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }

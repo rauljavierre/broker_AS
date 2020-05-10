@@ -11,6 +11,8 @@ import java.util.*;
  */
 public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
 
+    private static final long serialVersionUID = 4L;            //Default serial version uid
+
 
     private long numberOfInvocations;
 
@@ -19,6 +21,7 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
      */
     public ServerBlaBloImpl(String name, String IP_port) throws RemoteException {
         super(name, IP_port);
+        numberOfInvocations = 0;
     }
 
     /**
@@ -37,12 +40,10 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
     @Override
     public Object execute_service(String service_name, List<Object> parameters) {
         numberOfInvocations++;
-        switch (service_name) {
-            case "doSomething":
-                return doSomething();
-            default:
-                return -1;
+        if ("doSomething".equals(service_name)) {
+            return doSomething();
         }
+        return -1;
     }
 
     /**

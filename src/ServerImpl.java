@@ -1,11 +1,12 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class ServerImpl extends UnicastRemoteObject implements Server {
+
+    private static final long serialVersionUID = 4L;            //Default serial version uid
 
     protected String name;
     protected String IP_port;
@@ -34,25 +35,23 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         this.IP_port = IP_port;
     }
 
-    public void add_service(Service service) throws RemoteException {
+    public void add_service(Service service) {
         services.put(service.getName(), service);
     }
 
-    public void delete_service(String service) throws RemoteException {
+    public void delete_service(String service) {
         services.remove(service);
     }
 
-    public Object execute_service(String service_name, List<Object> parameters) throws RemoteException {
+    public Object execute_service(String service_name, List<Object> parameters) {
         return null;
     }
 
-    public String getListOfServices() throws RemoteException {
+    public String getListOfServices() {
         StringBuilder toPrint = new StringBuilder();
-        Iterator entries = services.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry thisEntry = (Map.Entry) entries.next();
-            Service service = (Service) thisEntry.getValue();
-            toPrint.append("\n\nServer Name:\t").append(name).append("\n");
+        for (Map.Entry<String, Service> thisEntry : services.entrySet()) {
+            Service service = thisEntry.getValue();
+            toPrint.append("\nServer Name:\t").append(name).append("\n");
             toPrint.append("Service Name:\t").append(service.getName()).append("\n");
             toPrint.append("Parameters:\t").append(printAllParameters(service.getParameters()));
             toPrint.append("Returning type:\t").append(service.getReturn_type()).append("\n\n");
@@ -61,14 +60,14 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     }
 
     private String printAllParameters(List<String> parameters) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for(String parameter : parameters) {
-            result += parameter + "\n";
+            result.append(parameter).append("\n");
         }
-        return result;
+        return result.toString();
     }
 
-    public boolean hasThisService(String name_of_service) throws RemoteException {
+    public boolean hasThisService(String name_of_service) {
         return services.getOrDefault(name_of_service, null) != null;
     }
 }
