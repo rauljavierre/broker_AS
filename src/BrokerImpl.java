@@ -34,10 +34,10 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     }
 
     /**
-     *
-     * @param serverName
-     * @param IPPort
-     * @throws RemoteException
+     * <p>Register a server in the broker</p>
+     * @param serverName name of the server being registered
+     * @param IPPort IP port of the server being registered
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public void registerServer(final String serverName, final String IPPort) throws RemoteException {
         servers.put(serverName, new ServerImpl(serverName, IPPort));
@@ -46,15 +46,15 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
 
 
     /**
-     *
-     * @param serverName
-     * @param serviceName
-     * @param parameters
-     * @param returnType
-     * @throws RemoteException
+     * <p>register a service to be executed to clients by the server</p>
+     * @param serverName Name of the server that performs the service
+     * @param serviceName Name of the service to register
+     * @param parameters methods parameters
+     * @param returnType data type returned by the method
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public void registerService(final String serverName, final String serviceName,
-                                final List<String> parameters, final String returnType) throws RemoteException {
+                                final List<String> parameters, final String returnType){
 
         ServerImpl serverImpl = servers.getOrDefault(serverName, null);
         if (serverImpl == null) {
@@ -67,9 +67,9 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     }
 
     /**
-     *
-     * @param serverName
-     * @param serviceName
+     * <p>Delete a service to be executed to clients by the server</p>
+     * @param serverName Name of the server that performs the service
+     * @param serviceName Name of the service to delete
      */
     public void deleteService(final String serverName, final String serviceName) {
         ServerImpl serverImpl = servers.getOrDefault(serverName, null);
@@ -83,12 +83,12 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     }
 
     /**
-     *
-     * @param serverName
-     * @param serviceName
-     * @param parameters
-     * @return
-     * @throws RemoteException
+     * <p>Execute the service request by the client</p>
+     * @param serverName Name of the server that performs the service
+     * @param serviceName Name of the service to run
+     * @param parameters methods parameters
+     * @return response to execute a service requested by the client
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public Object executeSyncService(final String serverName, final String serviceName,
                                      final List<Object> parameters) throws RemoteException {
@@ -115,11 +115,11 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     }
 
     /**
-     *
-     * @param serverName
-     * @param serviceName
-     * @param parameters
-     * @throws RemoteException
+     * <p>Execute the service request by the client</p>
+     * @param serverName Name of the server that performs the service
+     * @param serviceName Name of the service to run
+     * @param parameters methods parameters
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public void executeAsyncService(final String serverName, final String serviceName,
                                     final List<Object> parameters) throws RemoteException {
@@ -152,10 +152,10 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     }
 
     /**
-     *
-     * @param serverName
-     * @param serviceName
-     * @return
+     * <p>Return the response of the method requested by the client</p>
+     * @param serverName Name of the server that performs the service
+     * @param serviceName Name of the service to run
+     * @return response to execute a service requested by the client
      */
     public Object obtainAsyncResponse(final String serverName, final String serviceName) {
         Object response = 0;
@@ -181,10 +181,10 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
 
     /**
      *
-     * @return
-     * @throws RemoteException
+     * @return list of the services offered to execute by the servers.
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
-    public String getListOfServices() throws RemoteException {
+    public String getListOfServices(){
         StringBuilder response = new StringBuilder("\n\nLIST OF SERVICES SUPPORTED BY THE OBJECT BROKER:");
         response.append("\n################################################\n\n");
         response.append("Server Name: Broker\nService Name: getListOfServices\n\n");

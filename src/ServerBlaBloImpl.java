@@ -25,8 +25,7 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
     }
 
     /**
-     *
-     * @return
+     * @return "Bla" if the number of executions are odd  or "Blo" if the number of executions are pair
      */
     public String doSomething() {
         if (numberOfInvocations % 2 == 0) {
@@ -38,10 +37,10 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
     }
 
     /**
-     *
-     * @param serviceName
-     * @param parameters
-     * @return
+     * <p>Execute the method requested by the client</p>
+     * @param serviceName Name of the method to run
+     * @param parameters Paramters of the method to execute
+     * @return The response of executing the required method
      */
     @Override
     public Object executeService(String serviceName, List<Object> parameters) {
@@ -53,7 +52,7 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
     }
 
     /**
-     * <p>Executes a server that does mathematical operations on demand</p>
+     * <p>Executes a server that does doSomething on demand</p>
      * @param args arguments passed to main program (not used)
      */
     public static void main(String[] args){

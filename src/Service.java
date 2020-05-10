@@ -1,5 +1,11 @@
 import java.util.List;
 
+/**
+ * Service is the class to save the information of a service.
+ *
+ * @author Raul Javierre, Eduardo Ruiz
+ *
+ */
 public class Service {
 
     private String name;
@@ -7,10 +13,7 @@ public class Service {
     private String return_type;
 
     /**
-     *
-     * @param name
-     * @param parameters
-     * @param return_type
+     * Class constructor.
      */
     public Service(String name, List<String> parameters, String return_type) {
         this.name = name;

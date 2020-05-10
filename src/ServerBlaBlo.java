@@ -8,8 +8,7 @@
 public interface ServerBlaBlo {
 
     /**
-     *
-     * @return
+     * @return "Bla" if the number of executions are odd  or "Blo" if the number of executions are pair
      */
     String doSomething();
 }

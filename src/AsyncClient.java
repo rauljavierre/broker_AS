@@ -8,14 +8,19 @@ import java.util.List;
 import java.util.Scanner;
 import static java.lang.Thread.sleep;
 
+/**
+ * AsyncClient is the class that implements the functionality to execute requests asynchronously
+ * of an indirect stateful broker.
+ *
+ * @author Raul Javierre, Eduardo Ruiz
+ *
+ */
 public class AsyncClient {
 
     private Broker broker;
 
-    /**
-     *
-     * @param brokerIPPort
-     * @param brokerName
+    /*
+     * Constructor Class
      */
     public AsyncClient(String brokerIPPort, String brokerName) {
         // Searching the broker
@@ -28,19 +33,18 @@ public class AsyncClient {
 
     /**
      *
-     * @return
-     * @throws RemoteException
+     * @return List of services offered by broker
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public String getListOfServices() throws RemoteException {
         return broker.getListOfServices();
     }
 
     /**
-     *
-     * @param serverName
-     * @param serviceName
-     * @param parameters
-     * @throws RemoteException
+     * Execute a service offered by the brokerage asynchronously
+     * @param serverName Name of the server that performs the service
+     * @param serviceName Name of the service to run
+     * @param parameters methods parameters
      */
     private void executeAsyncService(final String serverName, final String serviceName,
                                      final List<Object> parameters) throws RemoteException {
@@ -48,9 +52,8 @@ public class AsyncClient {
     }
 
     /**
-     *
-     * @param parameters
-     * @return
+     * @param parameters methods parameters
+     * @return methods parameters in list
      */
     private List<Object> parseParameters(String parameters) {
         return Arrays   .asList(Arrays.stream(parameters
@@ -61,8 +64,8 @@ public class AsyncClient {
     }
 
     /**
-     *
-     * @return
+     *  <p>Get the server, method and parameters that the user want to run</p>
+     * @return the response of the requested method to execute
      */
     public List<Object> entryServiceInput() {
         String serverName, serviceName, parameters;
@@ -85,11 +88,11 @@ public class AsyncClient {
     }
 
     /**
-     *
-     * @param serverName
-     * @param serviceName
-     * @return
-     * @throws RemoteException
+     * <p>Returns the response of the method requested by the client</p>
+     * @param serverName Name of the server that performs the service
+     * @param serviceName Name of the service to run
+     * @return response of the method executed
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     private Object obtainAsyncResponse(final String serverName, final String serviceName) throws RemoteException {
         return broker.obtainAsyncResponse(serverName, serviceName);

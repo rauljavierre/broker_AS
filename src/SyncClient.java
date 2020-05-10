@@ -6,14 +6,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * AsyncClient is the class that implements the functionality to execute requests synchronously.
+ * of an indirect stateful broker.
+ *
+ * @author Raul Javierre, Eduardo Ruiz
+ *
+ */
 public class SyncClient {
 
     private Broker broker;
 
     /**
      *
-     * @param brokerIPPort
-     * @param brokerName
+     * @param brokerIPPort broker ip port
+     * @param brokerName broker name
      */
     public SyncClient(String brokerIPPort, String brokerName) {
         // Searching the broker
@@ -26,8 +33,8 @@ public class SyncClient {
 
     /**
      *
-     * @return
-     * @throws RemoteException
+     * @return list of the services offered to execute by the servers registered in the broker
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public String getListOfServices() throws RemoteException {
         return broker.getListOfServices();
@@ -35,11 +42,11 @@ public class SyncClient {
 
     /**
      *
-     * @param serverName
-     * @param serviceName
-     * @param parameters
-     * @return
-     * @throws RemoteException
+     * @param serverName Name of the server that performs the service
+     * @param serviceName Name of the service to run
+     * @param parameters methods parameters
+     * @return response of executed the service requested
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     private Object executeSyncService(final String serverName, final String serviceName, final List<Object> parameters) throws RemoteException {
         return broker.executeSyncService(serverName, serviceName, parameters);
@@ -47,8 +54,8 @@ public class SyncClient {
 
     /**
      *
-     * @param parameters
-     * @return
+     * @param parameters list of parameters to execute in the method in string
+     * @return the list of object to excute like parameters in the method
      */
     private List<Object> parseParameters(String parameters) {
         return Arrays   .asList(Arrays.stream(parameters
@@ -60,8 +67,8 @@ public class SyncClient {
 
     /**
      *
-     * @return
-     * @throws RemoteException
+     * @return if the servicie is different of white return true else return false
+     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public boolean entryServiceInput() throws RemoteException {
         String serverName, serviceName, parameters;

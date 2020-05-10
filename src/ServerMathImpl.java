@@ -107,10 +107,10 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
     }
 
     /**
-     *
-     * @param serviceName
-     * @param parameters
-     * @return
+     * <p>Execute the method requested by the client</p>
+     * @param serviceName Name of the service to run
+     * @param parameters methods parameters
+     * @return response of execute the method requested
      */
     @Override
     public Object executeService(String serviceName, List<Object> parameters) {
