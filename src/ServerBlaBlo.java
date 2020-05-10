@@ -8,8 +8,8 @@
 public interface ServerBlaBlo {
 
     /**
-     * <p>Counts the odd numbers of the array passed</p>
-     * @return the number of odd numbers of the array passed
+     *
+     * @return
      */
     String doSomething();
 }

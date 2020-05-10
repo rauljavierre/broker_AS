@@ -20,8 +20,8 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     private static final long serialVersionUID = 4L;            //Default serial version uid
 
     Map<String, ServerImpl> servers;
-    Map<String, String> pending_services;   // <client_IP, server_name + service_name>
-    Map<String, Object> pending_results;    // <client_IP, result>
+    Map<String, String> pendingServices;   // <clientIP, serverName + serviceName>
+    Map<String, Object> pendingResults;    // <clientIP, result>
 
     /**
      * Class constructor.
@@ -29,70 +29,82 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     public BrokerImpl() throws RemoteException {
         super(); // Calls UnicastRemoteObject constructor
         this.servers = new HashMap<>();
-        this.pending_services = new HashMap<>();
-        this.pending_results = new HashMap<>();
+        this.pendingServices = new HashMap<>();
+        this.pendingResults = new HashMap<>();
     }
 
     /**
-     * <p>Counts the odd numbers of the array passed</p>
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param IPPort
+     * @throws RemoteException
      */
-    public void register_server(final String server_name, final String IP_port) throws RemoteException {
-        servers.put(server_name, new ServerImpl(server_name, IP_port));
-        System.out.println("Server " + server_name + " has been registered");
+    public void registerServer(final String serverName, final String IPPort) throws RemoteException {
+        servers.put(serverName, new ServerImpl(serverName, IPPort));
+        System.out.println("Server " + serverName + " has been registered");
     }
 
-    /**
-     * <p>Calculates the fibonacci number of the integer passed</p>
-     * @throws RemoteException may occur during the execution of a remote method call
-     */
-    public void register_service(final String server_name, final String service_name,
-                                 final List<String> parameters, final String return_type) throws RemoteException {
 
-        ServerImpl serverImpl = servers.getOrDefault(server_name, null);
+    /**
+     *
+     * @param serverName
+     * @param serviceName
+     * @param parameters
+     * @param returnType
+     * @throws RemoteException
+     */
+    public void registerService(final String serverName, final String serviceName,
+                                final List<String> parameters, final String returnType) throws RemoteException {
+
+        ServerImpl serverImpl = servers.getOrDefault(serverName, null);
         if (serverImpl == null) {
-            System.out.println("Server " + server_name + " not registered");
+            System.out.println("Server " + serverName + " not registered");
         }
         else {
-            serverImpl.add_service(new Service(service_name, parameters, return_type));
-            System.out.println("Server " + server_name + " has registered " + service_name);
+            serverImpl.addService(new Service(serviceName, parameters, returnType));
+            System.out.println("Server " + serverName + " has registered " + serviceName);
         }
     }
 
     /**
-     * <p>Calculates the fibonacci number of the integer passed</p>
+     *
+     * @param serverName
+     * @param serviceName
      */
-    public void delete_service(final String server_name, final String service_name) {
-        ServerImpl serverImpl = servers.getOrDefault(server_name, null);
+    public void deleteService(final String serverName, final String serviceName) {
+        ServerImpl serverImpl = servers.getOrDefault(serverName, null);
         if (serverImpl == null) {
-            System.out.println("Server " + server_name + " not registered");
+            System.out.println("Server " + serverName + " not registered");
         }
         else {
-            serverImpl.delete_service(service_name);
-            System.out.println("Server " + server_name + " has deleted " + service_name);
+            serverImpl.deleteService(serviceName);
+            System.out.println("Server " + serverName + " has deleted " + serviceName);
         }
     }
 
     /**
-     * <p>Calculates the collatz sequence of the integer passed</p>
-     * @return the collatz sequence of the integer passed
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param serviceName
+     * @param parameters
+     * @return
+     * @throws RemoteException
      */
-    public Object execute_sync_service(final String server_name, final String service_name,
-                                       final List<Object> parameters) throws RemoteException {
-        ServerImpl serverImpl = servers.getOrDefault(server_name, null);
+    public Object executeSyncService(final String serverName, final String serviceName,
+                                     final List<Object> parameters) throws RemoteException {
+        ServerImpl serverImpl = servers.getOrDefault(serverName, null);
         Object response = 0;
         if (serverImpl == null) {
-            response = "Server " + server_name + " not registered";
+            response = "Server " + serverName + " not registered";
         }
         else {
             try {
-                Server server = (Server) Naming.lookup("//" + serverImpl.getIP_port() + "/" + serverImpl.getName());
-                if(serverImpl.hasThisService(service_name)){
-                    response = server.execute_service(service_name, parameters);
+                Server server = (Server) Naming.lookup("//" + serverImpl.getIPPort() + "/" + serverImpl.getName());
+                if(serverImpl.hasThisService(serviceName)){
+                    response = server.executeService(serviceName, parameters);
                 }
                 else {
-                    response = "The server " + server_name + " hasn't the service " + service_name;
+                    response = "The server " + serverName + " hasn't the service " + serviceName;
                 }
             }
             catch (NotBoundException | MalformedURLException e) {
@@ -103,31 +115,34 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     }
 
     /**
-     * <p>Calculates the collatz sequence of the integer passed</p>
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param serviceName
+     * @param parameters
+     * @throws RemoteException
      */
-    public void execute_async_service(final String server_name, final String service_name,
-                                        final List<Object> parameters) throws RemoteException {
+    public void executeAsyncService(final String serverName, final String serviceName,
+                                    final List<Object> parameters) throws RemoteException {
 
-        ServerImpl serverImpl = servers.getOrDefault(server_name, null);
+        ServerImpl serverImpl = servers.getOrDefault(serverName, null);
         if (serverImpl == null) {
             try {
-                pending_results.put(getClientHost(), "Server " + server_name + " not registered");
+                pendingResults.put(getClientHost(), "Server " + serverName + " not registered");
             } catch (ServerNotActiveException e) {
                 e.printStackTrace();
             }
         }
         else {
             try {
-                Server server = (Server) Naming.lookup("//" + serverImpl.getIP_port() + "/" + serverImpl.getName());
-                if(serverImpl.hasThisService(service_name)){
-                    if(pending_services.getOrDefault(getClientHost(), null) == null) {
-                        pending_results.put(getClientHost(), server.execute_service(service_name, parameters));
-                        pending_services.put(getClientHost(), server_name + service_name);
+                Server server = (Server) Naming.lookup("//" + serverImpl.getIPPort() + "/" + serverImpl.getName());
+                if(serverImpl.hasThisService(serviceName)){
+                    if(pendingServices.getOrDefault(getClientHost(), null) == null) {
+                        pendingResults.put(getClientHost(), server.executeService(serviceName, parameters));
+                        pendingServices.put(getClientHost(), serverName + serviceName);
                     }
                 }
                 else {
-                    pending_results.put(getClientHost(),"The server " + server_name + " hasn't the service " + service_name);
+                    pendingResults.put(getClientHost(),"The server " + serverName + " hasn't the service " + serviceName);
                 }
             }
             catch (NotBoundException | MalformedURLException | ServerNotActiveException e) {
@@ -137,16 +152,18 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     }
 
     /**
-     * <p>Calculates the collatz sequence of the integer passed</p>
-     * @return the collatz sequence of the integer passed
+     *
+     * @param serverName
+     * @param serviceName
+     * @return
      */
-    public Object obtain_async_response(final String server_name, final String service_name) {
+    public Object obtainAsyncResponse(final String serverName, final String serviceName) {
         Object response = 0;
         try {
-            if(pending_services.getOrDefault(getClientHost(), null).equals(server_name + service_name)) {
-                response = pending_results.get(getClientHost());
-                pending_services.remove(getClientHost());
-                pending_results.remove(getClientHost());
+            if(pendingServices.getOrDefault(getClientHost(), null).equals(serverName + serviceName)) {
+                response = pendingResults.get(getClientHost());
+                pendingServices.remove(getClientHost());
+                pendingResults.remove(getClientHost());
             }
             else {
                 response = "Error obtaining async response";
@@ -163,9 +180,9 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
 
 
     /**
-     * <p>Calculates the collatz sequence of the integer passed</p>
-     * @return the collatz sequence of the integer passed
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @return
+     * @throws RemoteException
      */
     public String getListOfServices() throws RemoteException {
         StringBuilder response = new StringBuilder("\n\nLIST OF SERVICES SUPPORTED BY THE OBJECT BROKER:");

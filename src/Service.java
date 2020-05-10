@@ -6,6 +6,12 @@ public class Service {
     private List<String> parameters;
     private String return_type;
 
+    /**
+     *
+     * @param name
+     * @param parameters
+     * @param return_type
+     */
     public Service(String name, List<String> parameters, String return_type) {
         this.name = name;
         this.parameters = parameters;
@@ -28,7 +34,7 @@ public class Service {
         this.parameters = parameters;
     }
 
-    public String getReturn_type() {
+    public String getReturnType() {
         return return_type;
     }
 

@@ -12,23 +12,46 @@ public class AsyncClient {
 
     private Broker broker;
 
-    public AsyncClient(String broker_IP_port, String broker_name) {
+    /**
+     *
+     * @param brokerIPPort
+     * @param brokerName
+     */
+    public AsyncClient(String brokerIPPort, String brokerName) {
         // Searching the broker
         try {
-            broker = (Broker) Naming.lookup("//" + broker_IP_port + "/" + broker_name);
+            broker = (Broker) Naming.lookup("//" + brokerIPPort + "/" + brokerName);
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     *
+     * @return
+     * @throws RemoteException
+     */
     public String getListOfServices() throws RemoteException {
         return broker.getListOfServices();
     }
 
-    private void execute_async_service(final String server_name, final String service_name, final List<Object> parameters) throws RemoteException {
-        broker.execute_async_service(server_name, service_name, parameters);
+    /**
+     *
+     * @param serverName
+     * @param serviceName
+     * @param parameters
+     * @throws RemoteException
+     */
+    private void executeAsyncService(final String serverName, final String serviceName,
+                                     final List<Object> parameters) throws RemoteException {
+        broker.executeAsyncService(serverName, serviceName, parameters);
     }
 
+    /**
+     *
+     * @param parameters
+     * @return
+     */
     private List<Object> parseParameters(String parameters) {
         return Arrays   .asList(Arrays.stream(parameters
                         .replaceAll(" ", "")
@@ -37,6 +60,10 @@ public class AsyncClient {
                         .toArray());
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Object> entryServiceInput() {
         String serverName, serviceName, parameters;
         List<Object> response = new ArrayList<>();
@@ -57,8 +84,15 @@ public class AsyncClient {
         return response;
     }
 
-    private Object obtain_async_response(final String server_name, final String service_name) throws RemoteException {
-        return broker.obtain_async_response(server_name, service_name);
+    /**
+     *
+     * @param serverName
+     * @param serviceName
+     * @return
+     * @throws RemoteException
+     */
+    private Object obtainAsyncResponse(final String serverName, final String serviceName) throws RemoteException {
+        return broker.obtainAsyncResponse(serverName, serviceName);
     }
 
 
@@ -85,9 +119,9 @@ public class AsyncClient {
                     continue;
                 }
                 System.out.println("Executing " + list.get(0) + "." + list.get(1) + " and waiting 5 seconds...");
-                asyncClient.execute_async_service((String) list.get(0), (String) list.get(1), (List<Object>) list.get(2));
+                asyncClient.executeAsyncService((String) list.get(0), (String) list.get(1), (List<Object>) list.get(2));
                 sleep(5000);
-                System.out.println("Response: " + asyncClient.obtain_async_response((String) list.get(0), (String) list.get(1)));
+                System.out.println("Response: " + asyncClient.obtainAsyncResponse((String) list.get(0), (String) list.get(1)));
             }
         } catch (RemoteException | InterruptedException e) {
             e.printStackTrace();

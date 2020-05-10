@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * ServerBlaBloImpl is the class that implements the API
- * of a server that holds mathematical operations. Stateless server.
+ * of a server that holds mathematical operations. Stateful server.
  *
  * @author Raul Javierre, Eduardo Ruiz
  *
@@ -19,14 +19,14 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
     /**
      * Class constructor.
      */
-    public ServerBlaBloImpl(String name, String IP_port) throws RemoteException {
-        super(name, IP_port);
+    public ServerBlaBloImpl(String name, String IPPort) throws RemoteException {
+        super(name, IPPort);
         numberOfInvocations = 0;
     }
 
     /**
-     * <p>Counts the odd numbers of the array passed</p>
-     * @return the number of odd numbers of the array passed
+     *
+     * @return
      */
     public String doSomething() {
         if (numberOfInvocations % 2 == 0) {
@@ -37,10 +37,16 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
         }
     }
 
+    /**
+     *
+     * @param serviceName
+     * @param parameters
+     * @return
+     */
     @Override
-    public Object execute_service(String service_name, List<Object> parameters) {
+    public Object executeService(String serviceName, List<Object> parameters) {
         numberOfInvocations++;
-        if ("doSomething".equals(service_name)) {
+        if ("doSomething".equals(serviceName)) {
             return doSomething();
         }
         return -1;
@@ -66,17 +72,17 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
             System.out.println(obj.getName() + " created!");
 
             // Registering remote object
-            Naming.rebind("//" + obj.getIP_port() + "/" + obj.getName(), obj);
-            System.out.println(obj.getName() + " registered at " + obj.getIP_port() + "!");
+            Naming.rebind("//" + obj.getIPPort() + "/" + obj.getName(), obj);
+            System.out.println(obj.getName() + " registered at " + obj.getIPPort() + "!");
 
             // Searching the broker
             Broker broker = (Broker) Naming.lookup("//" + "127.0.0.1:5000" + "/" + "Broker_R_E");
 
             // Registering the server in the broker
-            broker.register_server(obj.getName(), obj.getIP_port());
+            broker.registerServer(obj.getName(), obj.getIPPort());
 
             // Registering some services in the broker
-            broker.register_service(obj.getName(), "doSomething", Collections.singletonList(""), "long");
+            broker.registerService(obj.getName(), "doSomething", Collections.singletonList(""), "long");
         }
         catch (Exception ex) {
             ex.printStackTrace();

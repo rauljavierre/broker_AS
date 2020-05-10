@@ -10,23 +10,46 @@ public class SyncClient {
 
     private Broker broker;
 
-    public SyncClient(String broker_IP_port, String broker_name) {
+    /**
+     *
+     * @param brokerIPPort
+     * @param brokerName
+     */
+    public SyncClient(String brokerIPPort, String brokerName) {
         // Searching the broker
         try {
-            broker = (Broker) Naming.lookup("//" + broker_IP_port + "/" + broker_name);
+            broker = (Broker) Naming.lookup("//" + brokerIPPort + "/" + brokerName);
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     *
+     * @return
+     * @throws RemoteException
+     */
     public String getListOfServices() throws RemoteException {
         return broker.getListOfServices();
     }
 
-    private Object execute_sync_service(final String server_name, final String service_name, final List<Object> parameters) throws RemoteException {
-        return broker.execute_sync_service(server_name, service_name, parameters);
+    /**
+     *
+     * @param serverName
+     * @param serviceName
+     * @param parameters
+     * @return
+     * @throws RemoteException
+     */
+    private Object executeSyncService(final String serverName, final String serviceName, final List<Object> parameters) throws RemoteException {
+        return broker.executeSyncService(serverName, serviceName, parameters);
     }
 
+    /**
+     *
+     * @param parameters
+     * @return
+     */
     private List<Object> parseParameters(String parameters) {
         return Arrays   .asList(Arrays.stream(parameters
                         .replaceAll(" ", "")
@@ -35,6 +58,11 @@ public class SyncClient {
                         .toArray());
     }
 
+    /**
+     *
+     * @return
+     * @throws RemoteException
+     */
     public boolean entryServiceInput() throws RemoteException {
         String serverName, serviceName, parameters;
         Scanner scanner = new Scanner(System.in);
@@ -52,7 +80,7 @@ public class SyncClient {
         System.out.print("Enter the parameters (separated by commas): ");
         parameters = scanner.nextLine();
         List<Object> parametersList = parseParameters(parameters);
-        System.out.println("Response: " + execute_sync_service(serverName, serviceName, parametersList));
+        System.out.println("Response: " + executeSyncService(serverName, serviceName, parametersList));
         return true;
     }
 

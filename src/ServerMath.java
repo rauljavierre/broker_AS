@@ -14,7 +14,7 @@ public interface ServerMath {
      * @param numbers an array of numbers
      * @return the number of odd numbers of the array passed
      */
-    long number_of_odd(List<Integer> numbers);
+    long numberOfOdd(List<Integer> numbers);
 
     /**
      * <p>Calculates the fibonacci number of the integer passed</p>
@@ -28,5 +28,5 @@ public interface ServerMath {
      * @param number the number that we want to know its collatz sequence
      * @return the collatz sequence of the integer passed
      */
-    List<Integer> collatz_sequence(final int number);
+    List<Integer> collatzSequence(final int number);
 }

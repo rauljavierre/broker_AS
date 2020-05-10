@@ -12,50 +12,66 @@ import java.util.List;
 public interface Broker extends Remote {
 
     /**
-     * <p>Counts the odd numbers of the array passed</p>
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param IPPort
+     * @throws RemoteException
      */
-    void register_server(final String server_name, final String IP_port) throws RemoteException;
+    void registerServer(final String serverName, final String IPPort) throws RemoteException;
 
     /**
-     * <p>Calculates the fibonacci number of the integer passed</p>
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param serviceName
+     * @param parameters
+     * @param returnType
+     * @throws RemoteException
      */
-    void register_service(final String server_name, final String service_name,
-                          final List<String> parameters, final String return_type) throws RemoteException;
+    void registerService(final String serverName, final String serviceName,
+                         final List<String> parameters, final String returnType) throws RemoteException;
 
     /**
-     * <p>Calculates the fibonacci number of the integer passed</p>
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param serviceName
+     * @throws RemoteException
      */
-    void delete_service(final String server_name, final String service_name) throws RemoteException;
+    void deleteService(final String serverName, final String serviceName) throws RemoteException;
 
     /**
-     * <p>Calculates the collatz sequence of the integer passed</p>
-     * @return the collatz sequence of the integer passed
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param serviceName
+     * @param parameters
+     * @return
+     * @throws RemoteException
      */
-    Object execute_sync_service(final String server_name, final String service_name,
-                                final List<Object> parameters) throws RemoteException;
+    Object executeSyncService(final String serverName, final String serviceName,
+                              final List<Object> parameters) throws RemoteException;
 
     /**
-     * <p>Calculates the collatz sequence of the integer passed</p>
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param serviceName
+     * @param parameters
+     * @throws RemoteException
      */
-    void execute_async_service(final String server_name, final String service_name,
-                                 final List<Object> parameters) throws RemoteException;
+    void executeAsyncService(final String serverName, final String serviceName,
+                             final List<Object> parameters) throws RemoteException;
 
     /**
-     * <p>Calculates the collatz sequence of the integer passed</p>
-     * @return the collatz sequence of the integer passed
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @param serverName
+     * @param serviceName
+     * @return
+     * @throws RemoteException
      */
-    Object obtain_async_response(final String server_name, final String service_name) throws RemoteException;
+    Object obtainAsyncResponse(final String serverName, final String serviceName) throws RemoteException;
 
     /**
-     * <p>Calculates the collatz sequence of the integer passed</p>
-     * @return the collatz sequence of the integer passed
-     * @throws RemoteException may occur during the execution of a remote method call
+     *
+     * @return
+     * @throws RemoteException
      */
     String getListOfServices() throws RemoteException;
 }

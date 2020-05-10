@@ -19,8 +19,8 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
     /**
      * Class constructor.
      */
-    public ServerMathImpl(String name, String IP_port) throws RemoteException {
-        super(name, IP_port);
+    public ServerMathImpl(String name, String IPPort) throws RemoteException {
+        super(name, IPPort);
     }
 
     /**
@@ -28,7 +28,7 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
      * @param numbers an array of numbers
      * @return the number of odd numbers of the array passed
      */
-    public long number_of_odd(List<Integer> numbers) {
+    public long numberOfOdd(List<Integer> numbers) {
         return numbers.stream()
                 .filter(ServerMathImpl::isOdd)
                 .count();
@@ -51,7 +51,7 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
     public int fibonacci(final int number) {
         int response = 0;
         if (number > 0) {
-            response = recursive_fibonacci(number);
+            response = recursiveFibonacci(number);
         }
         return response;
     }
@@ -61,9 +61,9 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
      * @param number the number that we want to know fibonacci(number)
      * @return fibonacci(number)
      */
-    private int recursive_fibonacci(final int number) {
+    private int recursiveFibonacci(final int number) {
         if (number > 1) {
-            return recursive_fibonacci(number - 1) + recursive_fibonacci(number - 2);
+            return recursiveFibonacci(number - 1) + recursiveFibonacci(number - 2);
         }
         else if (number == 1) {
             return 1;
@@ -78,7 +78,7 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
      * @param number the number that we want to know its collatz sequence
      * @return the collatz sequence of the integer passed
      */
-    public List<Integer> collatz_sequence(final int number) {
+    public List<Integer> collatzSequence(final int number) {
         int actual = number;
         List<Integer> response = new ArrayList<>();
         response.add(actual);
@@ -106,9 +106,15 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
         }
     }
 
+    /**
+     *
+     * @param serviceName
+     * @param parameters
+     * @return
+     */
     @Override
-    public Object execute_service(String service_name, List<Object> parameters) {
-        switch (service_name) {
+    public Object executeService(String serviceName, List<Object> parameters) {
+        switch (serviceName) {
             case "fibonacci":
                 try {
                     return fibonacci(Integer.parseInt((String) parameters.get(0)));
@@ -116,21 +122,21 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
                 catch (NumberFormatException | ClassCastException ex) {
                     return "Bad call";
                 }
-            case "number_of_odd":
+            case "numberOfOdd":
                 try {
                     List<Integer> list = new ArrayList<>();
                     for (Object x : parameters) {
                         Integer parseInt = Integer.parseInt((String) x);
                         list.add(parseInt);
                     }
-                    return number_of_odd(list);
+                    return numberOfOdd(list);
                 }
                 catch (NumberFormatException | ClassCastException ex) {
                     return "Bad call";
                 }
-            case "collatz_sequence":
+            case "collatzSequence":
                 try {
-                    return collatz_sequence(Integer.parseInt((String) parameters.get(0)));
+                    return collatzSequence(Integer.parseInt((String) parameters.get(0)));
                 }
                 catch (NumberFormatException | ClassCastException ex) {
                     return "Bad call";
@@ -160,23 +166,23 @@ public class ServerMathImpl extends ServerImpl implements ServerMath {
             System.out.println(obj.getName() + " created!");
 
             // Registering remote object
-            Naming.rebind("//" + obj.getIP_port() + "/" + obj.getName(), obj);
-            System.out.println(obj.getName() + " registered at " + obj.getIP_port() + "!");
+            Naming.rebind("//" + obj.getIPPort() + "/" + obj.getName(), obj);
+            System.out.println(obj.getName() + " registered at " + obj.getIPPort() + "!");
 
             // Searching the broker
             Broker broker = (Broker) Naming.lookup("//" + "127.0.0.1:5000" + "/" + "Broker_R_E");
 
             // Registering the server in the broker
-            broker.register_server(obj.getName(), obj.getIP_port());
+            broker.registerServer(obj.getName(), obj.getIPPort());
 
             // Registering some services in the broker
-            broker.register_service(obj.getName(), "number_of_odd", Collections.singletonList("List<Integer>"), "long");
-            broker.register_service(obj.getName(), "fibonacci", Collections.singletonList("int"), "int");
+            broker.registerService(obj.getName(), "numberOfOdd", Collections.singletonList("List<Integer>"), "long");
+            broker.registerService(obj.getName(), "fibonacci", Collections.singletonList("int"), "int");
 
             // Waiting 60 seconds and updating our offer of services
             sleep(60000);
-            broker.register_service(obj.getName(), "collatz_sequence", Collections.singletonList("int"), "List<Integer>");
-            broker.delete_service(obj.getName(), "fibonacci");
+            broker.registerService(obj.getName(), "collatzSequence", Collections.singletonList("int"), "List<Integer>");
+            broker.deleteService(obj.getName(), "fibonacci");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
