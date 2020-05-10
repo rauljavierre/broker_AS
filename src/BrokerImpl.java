@@ -119,35 +119,40 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
      * @param serverName Name of the server that performs the service
      * @param serviceName Name of the service to run
      * @param parameters methods parameters
-     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public void executeAsyncService(final String serverName, final String serviceName,
-                                    final List<Object> parameters) throws RemoteException {
+                                    final List<Object> parameters)  {
+        try {
+            final String IPClient = getClientHost();
 
-        ServerImpl serverImpl = servers.getOrDefault(serverName, null);
-        if (serverImpl == null) {
-            try {
-                pendingResults.put(getClientHost(), "Server " + serverName + " not registered");
-            } catch (ServerNotActiveException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            try {
-                Server server = (Server) Naming.lookup("//" + serverImpl.getIPPort() + "/" + serverImpl.getName());
-                if(serverImpl.hasThisService(serviceName)){
-                    if(pendingServices.getOrDefault(getClientHost(), null) == null) {
-                        pendingResults.put(getClientHost(), server.executeService(serviceName, parameters));
-                        pendingServices.put(getClientHost(), serverName + serviceName);
+            Thread thread = new Thread() {
+                public void run(){
+                    ServerImpl serverImpl = servers.getOrDefault(serverName, null);
+                    if (serverImpl == null) {
+                        pendingResults.put(IPClient, "Server " + serverName + " not registered");
+                    } else {
+                        try {
+                            Server server = (Server) Naming.lookup("//" + serverImpl.getIPPort() + "/" + serverImpl.getName());
+                            if(serverImpl.hasThisService(serviceName)){
+                                if(pendingServices.getOrDefault(IPClient, null) == null) {
+                                    pendingResults.put(IPClient, server.executeService(serviceName, parameters));
+                                    pendingServices.put(IPClient, serverName + serviceName);
+                                }
+                            }
+                            else {
+                                pendingResults.put(IPClient,"The server " + serverName + " hasn't the service " + serviceName);
+                            }
+                        }
+                        catch (NotBoundException | MalformedURLException | RemoteException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-                else {
-                    pendingResults.put(getClientHost(),"The server " + serverName + " hasn't the service " + serviceName);
-                }
-            }
-            catch (NotBoundException | MalformedURLException | ServerNotActiveException e) {
-                e.printStackTrace();
-            }
+            };
+
+            thread.start();
+        } catch (ServerNotActiveException e) {
+            e.printStackTrace();
         }
     }
 
@@ -182,7 +187,6 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
     /**
      *
      * @return list of the services offered to execute by the servers.
-     * @throws RemoteException fails if connection to rmi doesn't work
      */
     public String getListOfServices(){
         StringBuilder response = new StringBuilder("\n\nLIST OF SERVICES SUPPORTED BY THE OBJECT BROKER:");
@@ -207,7 +211,7 @@ public class BrokerImpl extends UnicastRemoteObject implements Broker {
         System.setSecurityManager(new SecurityManager());
 
         // Where we are... IP:PORT or NAME (with DNS). RMI uses 1099 by default
-        String hostName = "127.0.0.1:5000";
+        String hostName = "155.210.154.193:32001";
 
         try {
             // Creating remote object

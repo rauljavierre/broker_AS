@@ -111,7 +111,7 @@ public class AsyncClient {
         System.setSecurityManager(new SecurityManager());
 
         // Creating the client
-        AsyncClient asyncClient = new AsyncClient("127.0.0.1:5000", "Broker_R_E");
+        AsyncClient asyncClient = new AsyncClient("155.210.154.193:32001", "Broker_R_E");
 
         try {
             List<Object> list;
@@ -124,7 +124,7 @@ public class AsyncClient {
                 System.out.println("Executing " + list.get(0) + "." + list.get(1) + " and waiting 5 seconds...");
                 asyncClient.executeAsyncService((String) list.get(0), (String) list.get(1), (List<Object>) list.get(2));
                 sleep(5000);
-                System.out.println("Response: " + asyncClient.obtainAsyncResponse((String) list.get(0), (String) list.get(1)));
+                System.out.println("Response: " + asyncClient.obtainAsyncResponse((String) list.get(0), (String) list.get(1)) + "\n");
             }
         } catch (RemoteException | InterruptedException e) {
             e.printStackTrace();

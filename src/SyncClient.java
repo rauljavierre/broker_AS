@@ -87,7 +87,7 @@ public class SyncClient {
         System.out.print("Enter the parameters (separated by commas): ");
         parameters = scanner.nextLine();
         List<Object> parametersList = parseParameters(parameters);
-        System.out.println("Response: " + executeSyncService(serverName, serviceName, parametersList));
+        System.out.println("Response: " + executeSyncService(serverName, serviceName, parametersList) + "\n");
         return true;
     }
 
@@ -103,12 +103,11 @@ public class SyncClient {
         System.setSecurityManager(new SecurityManager());
 
         // Creating the client
-        SyncClient syncClient = new SyncClient("127.0.0.1:5000", "Broker_R_E");
+        SyncClient syncClient = new SyncClient("155.210.154.193:32001", "Broker_R_E");
 
         try {
-            do {
-                System.out.println(syncClient.getListOfServices());
-            } while(syncClient.entryServiceInput());
+            System.out.println(syncClient.getListOfServices());
+            while(syncClient.entryServiceInput());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

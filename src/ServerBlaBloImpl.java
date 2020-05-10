@@ -63,7 +63,7 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
         System.setSecurityManager(new SecurityManager());
 
         // Where we are... IP:PORT or NAME (with DNS). RMI uses 1099 by default
-        String hostName = "127.0.0.1:5002";
+        String hostName = "155.210.154.196:32001";
 
         try {
             // Creating remote object
@@ -75,7 +75,7 @@ public class ServerBlaBloImpl extends ServerImpl implements ServerBlaBlo {
             System.out.println(obj.getName() + " registered at " + obj.getIPPort() + "!");
 
             // Searching the broker
-            Broker broker = (Broker) Naming.lookup("//" + "127.0.0.1:5000" + "/" + "Broker_R_E");
+            Broker broker = (Broker) Naming.lookup("//" + "155.210.154.193:32001" + "/" + "Broker_R_E");
 
             // Registering the server in the broker
             broker.registerServer(obj.getName(), obj.getIPPort());

@@ -1,6 +1,6 @@
 #!/bin/bash
 
 clear
-javac *.java
+javac -cp . *.java
 java ServerMathImpl
 
