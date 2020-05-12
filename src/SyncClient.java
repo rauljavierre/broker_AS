@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * AsyncClient is the class that implements the functionality to execute requests synchronously.
+ * SyncClient is the class that implements the functionality to execute requests synchronously.
  * of an indirect stateful broker.
  *
  * @author Raul Javierre, Eduardo Ruiz
